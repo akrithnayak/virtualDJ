@@ -1,0 +1,125 @@
+.background-join {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: center / cover no-repeat fixed url("../img/join/bg.png");
+}
+
+.join-form-div {
+  width: 70%;
+  height: 100vh;
+  margin-right: auto;
+}
+
+.join-form-div-wrapper {
+  width: 100%;
+  height: 100%;
+  background: rgba(243, 148, 6, 0.3);
+  display: flex;
+  align-items: center;
+}
+
+.join-form {
+  width: 30%;
+  margin: auto;
+}
+
+.join-form-element-div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.join-form-elements {
+  border: 1px solid yellow;
+  border-radius: 100px;
+  padding: 10px;
+  margin: 10px;
+  width: 100%;
+  outline: none;
+  text-align: center;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 100%;
+}
+
+.join-entry-message {
+  color: red;
+  text-align: center;
+}
+
+.join-form-element-button {
+  cursor: pointer;
+  margin: auto;
+  padding: 10px;
+  width: 50%;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  border: 1px solid white;
+  border-radius: 50px;
+  text-align: center;
+  color: white;
+}
+
+a {
+  text-decoration: none;
+}
+
+.join-back-button {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px;
+  border: 1px solid white;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+}
+
+.join-form-element-button:hover,
+.join-back-button:hover {
+  background-color: black;
+}
+
+@media screen and (max-width: 1200px) {
+  .join-form {
+    width: 35%;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .join-form {
+    width: 40%;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .join-form {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .join-form {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .join-form {
+    width: 80%;
+  }
+  .join-form-div {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 300px) {
+  .join-form {
+    width: 90%;
+  }
+  .join-form-div {
+    width: 90%;
+  }
+}

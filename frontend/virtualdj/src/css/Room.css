@@ -1,0 +1,38 @@
+.background-room {
+  background: center / cover no-repeat fixed url("../img/room/bg.gif");
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+}
+
+.room-song-details {
+  width: 50%;
+  height: 100%;
+  border: 1px solid white;
+}
+
+.room-chat {
+  width: 50%;
+  height: 100%;
+  border-right: 1px solid white;
+}
+
+.room-leave-button {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px;
+  border: 1px solid white;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+}
+
+.room-leave-button:hover {
+  background: white;
+  color: blue;
+}

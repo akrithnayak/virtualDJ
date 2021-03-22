@@ -42,17 +42,28 @@ export const leaveRoom = (data) => {
       })
       .catch((err) => console.log(err));
   }
-  // return fetch(`${API}/leave/${data.roomId}/${data.userId}`, {
-  //   method: "DELETE",
-  //   // headers: {
-  //   //   Accept: "application/json",
-  //   //   "Content-Type": "application/json",
-  //   // },
-  // })
-  //   .then((response) => {
-  //     return response.json();
-  //   })
-  //   .catch((err) => console.log(err));
+};
+
+export const endRoom = (data) => {
+  if (typeof window != "undefined") {
+    localStorage.removeItem("token");
+
+    return fetch(`${API}/end/${data.roomId}/${data.userId}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .catch((err) => console.log(err));
+  }
+};
+
+export const getRoom = (data) => {
+  return fetch(`${API}/room/${data}`)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
 };
 
 export const authenticate = (data, next) => {

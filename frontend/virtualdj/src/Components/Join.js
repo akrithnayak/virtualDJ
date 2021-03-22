@@ -37,12 +37,15 @@ class Join extends Component {
             loading: false,
           });
         } else {
-          authenticate({ userId: data._id, roomId: data.room }, () => {
-            this.setState({
-              didRedirect: true,
-              roomId: code,
-            });
-          });
+          authenticate(
+            { userId: data._id, roomId: data.room, role: data.role },
+            () => {
+              this.setState({
+                didRedirect: true,
+                roomId: data.room,
+              });
+            }
+          );
         }
       })
       .catch((err) => console.log(err));
@@ -50,7 +53,14 @@ class Join extends Component {
 
   render() {
     if (this.state.didRedirect)
-      return <Redirect to={`/room/${this.state.roomId}`} />;
+      return (
+        <Redirect
+          to={{
+            pathname: `/room/${this.state.roomId}`,
+            state: { room: this.state.roomId },
+          }}
+        />
+      );
     return (
       <div className="background-join">
         <div className="join-form-div">

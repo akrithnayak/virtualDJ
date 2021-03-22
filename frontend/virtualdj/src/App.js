@@ -13,7 +13,11 @@ class App extends Component {
           <Route exact path="/" component={Home} />
           <Route exact path="/create" component={Create} />
           <Route exact path="/join" component={Join} />
-          <Route exact path="/room/:roomId" component={Room} />
+          <Route
+            exact
+            path="/room/:roomId"
+            render={(props) => <Room {...props} />}
+          />
           <Redirect to="/" />
         </Switch>
       </BrowserRouter>

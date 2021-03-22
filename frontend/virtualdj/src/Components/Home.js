@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import sound from "../audio/bg.mp3";
+// import sound from "../audio/bg.mp3";
 import "../css/Home.css";
 
 class Home extends Component {
@@ -9,9 +9,7 @@ class Home extends Component {
   render() {
     return (
       <div className="background-home">
-        <div>
-          <audio src={sound} autoPlay loop />
-        </div>
+        <div>{/* <audio src={sound} autoPlay loop /> */}</div>
         <div className="background-outer">
           <div className="buttons-group">
             <div className="buttons-wrapper-home">

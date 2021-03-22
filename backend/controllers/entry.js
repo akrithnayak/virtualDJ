@@ -59,7 +59,7 @@ exports.createRoom = (req, res) => {
       }
       user.room = room._id;
       user.save();
-      return res.json(room);
+      return res.json({ user, room });
     });
   });
 };
@@ -144,4 +144,44 @@ exports.leaveRoom = (req, res) => {
       });
     }
   });
+};
+
+exports.endRoom = (req, res) => {
+  Room.findById(req.room._id).exec((err, room) => {
+    if (err || !room) {
+      return res.status(400).json({
+        error: "Room not found",
+      });
+    }
+    if (!req.user.role) {
+      return res.status(400).json({
+        error: "Access denied",
+      });
+    }
+    members = [];
+
+    for (var i = 0; i < room.members.length; i++) {
+      temp = room.members[i];
+      async function deleteUserTask(id) {
+        return await User.findByIdAndRemove(id);
+      }
+      deleteUserTask(temp._id);
+    }
+    Room.deleteOne({ _id: req.room._id }).exec((err) => {
+      if (err) {
+        return res.status(400).json({ error: "Something went wrong" });
+      }
+      return res.status(200).json({
+        msg: "Party ended!",
+      });
+    });
+  });
+};
+
+exports.getUser = (req, res) => {
+  return res.json(req.user);
+};
+
+exports.getRoom = (req, res) => {
+  return res.json(req.room);
 };

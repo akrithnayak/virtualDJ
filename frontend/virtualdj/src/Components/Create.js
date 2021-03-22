@@ -16,7 +16,7 @@ class Create extends Component {
       error: "",
       loading: false,
       didRedirect: false,
-      roomId: "",
+      room: "",
     };
   }
 
@@ -29,7 +29,6 @@ class Create extends Component {
   }
 
   onSubmit() {
-    console.log("hi");
     var { username, name, max, description } = this.state;
     if (max === "") max = 8;
     this.setState({
@@ -43,12 +42,19 @@ class Create extends Component {
             loading: false,
           });
         } else {
-          authenticate({ userId: data.admin }, () => {
-            this.setState({
-              didRedirect: true,
-              roomId: data.code,
-            });
-          });
+          authenticate(
+            {
+              userId: data.user._id,
+              roomId: data.room._id,
+              role: data.user.role,
+            },
+            () => {
+              this.setState({
+                didRedirect: true,
+                room: data.room,
+              });
+            }
+          );
         }
       })
       .catch((err) => console.log(err));
@@ -56,7 +62,14 @@ class Create extends Component {
 
   render() {
     if (this.state.didRedirect)
-      return <Redirect to={`/room/${this.state.roomId}`} />;
+      return (
+        <Redirect
+          to={{
+            pathname: `/room/${this.state.room._id}`,
+            state: { room: this.state.room },
+          }}
+        />
+      );
     return (
       <div className="background-create">
         <div className="create-form-div">

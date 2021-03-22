@@ -34,5 +34,40 @@
 
 .room-leave-button:hover {
   background: white;
-  color: blue;
+  color: red;
+}
+
+.room-code {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  right: 3px;
+  padding: 5px;
+  border: 1px solid white;
+  border-radius: 5px;
+  border-color: crimson;
+  text-align: center;
+  color: white;
+}
+
+.room-code .room-tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+}
+
+.room-tooltiptext {
+  position: relative;
+  top: 20px;
+  left: 25%;
+  background: transparent;
+}
+
+.room-code:hover .room-tooltiptext {
+  visibility: visible;
 }

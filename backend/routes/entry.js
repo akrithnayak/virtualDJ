@@ -6,6 +6,8 @@ const {
   endRoom,
   getRoomById,
   getUserById,
+  getUser,
+  getRoom,
 } = require("../controllers/entry");
 
 const router = express.Router();
@@ -17,5 +19,9 @@ router.post("/create", createRoom);
 
 router.post("/join", joinRoom);
 router.delete("/leave/:roomId/:userId", leaveRoom);
+router.delete("/end/:roomId/:userId", endRoom);
+
+router.get("/user/:userId", getUser);
+router.get("/room/:roomId", getRoom);
 
 module.exports = router;

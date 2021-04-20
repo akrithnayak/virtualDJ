@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const entryRoutes = require("./routes/entry");
+const spotifyRoutes = require("./routes/spotify");
 const cors = require("cors");
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/", entryRoutes);
+app.use("/", spotifyRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running at http://localhost:${process.env.PORT}`);

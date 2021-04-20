@@ -3,16 +3,18 @@ import { Redirect } from "react-router-dom";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { isAuthenticated, leaveRoom, endRoom, getRoom } from "../apicalls/room";
 import "../css/Room.css";
-import { getTracks, getPlaylists } from "../apicalls/spotify";
+import { getTracks, getPlaylists, getAccessToken } from "../apicalls/spotify";
 import searchIcon from "../img/room/search.png";
 import Song from "./SongBox";
 import Playlist from "./PlaylistBox";
+import Player from "./Player";
 
 class Room extends Component {
   constructor(props) {
     super(props);
     this.leaveRoom = this.leaveRoom.bind(this);
     this.endRoom = this.endRoom.bind(this);
+    this.playSong = this.playSong.bind(this);
     this.search = this.search.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.toggleTrackPlaylist = this.toggleTrackPlaylist.bind(this);
@@ -26,12 +28,30 @@ class Room extends Component {
       isTrack: true,
       trackResults: [],
       playlistResults: [],
+      accessToken: "",
+      trackUri: "",
     };
   }
 
   componentDidMount() {
     getRoom(this.props.match.params.roomId).then((room) => {
       this.setState({ room });
+    });
+    getAccessToken()
+      .then((data) => {
+        console.log(data.expiresIn);
+        this.setState({
+          accessToken: data.accessToken,
+        });
+      })
+      .catch(() => {
+        console.log("Somethin went wrong");
+      });
+  }
+
+  playSong(trackUri) {
+    this.setState({
+      trackUri,
     });
   }
 
@@ -113,7 +133,7 @@ class Room extends Component {
 
     const renderTrack = () => {
       return this.state.trackResults.map((track, id) => {
-        return <Song key={id} track={track} />;
+        return <Song key={id} track={track} playSong={this.playSong} />;
       });
     };
 
@@ -134,8 +154,8 @@ class Room extends Component {
             Leave party
           </div>
         )}
-        {isAuthenticated().role ? (
-          <div className="room-song-details">
+        <div className="room-song-details">
+          {isAuthenticated().role ? (
             <div className="track-playlist-wrapper">
               <div className="track-playlist-header-wrapper">
                 <div
@@ -184,10 +204,21 @@ class Room extends Component {
                   : ""}
               </div>
             </div>
-          </div>
-        ) : (
-          <div></div>
-        )}
+          ) : (
+            <div></div>
+          )}
+
+          {this.state.accessToken && this.state.trackUri ? (
+            <div className="room-player-wrapper">
+              <Player
+                accessToken={this.state.accessToken}
+                trackUri={this.state.trackUri}
+              />
+            </div>
+          ) : (
+            <div></div>
+          )}
+        </div>
 
         <div className="room-chat">
           <CopyToClipboard

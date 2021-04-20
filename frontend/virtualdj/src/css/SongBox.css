@@ -1,12 +1,13 @@
 .songbox-wrapper {
   height: 100px;
   width: 100%;
-  background-color: white;
+  color: white;
   border-radius: 5px;
   margin-bottom: 5px;
   padding: 5px;
   overflow-y: auto;
   display: flex;
+  background: transparent;
 }
 
 .songbox-image-wrapper {

@@ -60,3 +60,11 @@ export const getDevices = () => {
     })
     .catch((err) => console.log(err));
 };
+
+export const getAccessToken = () => {
+  return fetch(`${API}/getaccesstoken`)
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};

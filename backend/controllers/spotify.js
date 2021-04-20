@@ -1,10 +1,11 @@
 const SpotifyWebApi = require("spotify-web-api-node");
-const { SpotifyPlaybackSDK } = require("spotify-playback-sdk-node");
+
+require("dotenv").config();
 
 const spotifyApi = new SpotifyWebApi({
-  clientId: "0f96e54882e740a1b45d43176e88b78a",
-  clientSecret: "aebe2c44be11466fb59709e8f3e3833f",
-  redirectUri: "http://localhost:3001/callback",
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  redirectUri: process.env.REDIRECT_URI,
 });
 
 scopes = [
@@ -117,15 +118,15 @@ exports.getDevices = (req, res) => {
     });
 };
 
-const spotify = new SpotifyPlaybackSDK();
-
 exports.callback = (req, res) => {
   const { code } = req.query;
   spotifyApi
     .authorizationCodeGrant(code)
     .then((data) => {
+      console.log(data);
       spotifyApi.setAccessToken(data.body["access_token"]);
       spotifyApi.setRefreshToken(data.body["refresh_token"]);
+      spotifyApi.expiresIn = data.body.expires_in;
       res.redirect(`http://localhost:3000/create`);
     })
     .catch((err) => {
@@ -135,4 +136,12 @@ exports.callback = (req, res) => {
         });
       }
     });
+};
+
+exports.getAccessToken = (req, res) => {
+  return res.json({
+    accessToken: spotifyApi.getAccessToken(),
+    refreshToken: spotifyApi.getRefreshToken(),
+    expiresIn: spotifyApi.expiresIn,
+  });
 };

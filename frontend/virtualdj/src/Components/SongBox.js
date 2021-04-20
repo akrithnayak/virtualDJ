@@ -1,25 +1,14 @@
 import React, { Component } from "react";
-import { getAudioFeat, getDevices } from "../apicalls/spotify";
 import "../css/SongBox.css";
 import playBtn from "../img/songbox/play.png";
 
 class Song extends Component {
   constructor(props) {
     super(props);
-    this.getAudio = this.getAudio.bind(this);
     this.state = {
       track: this.props.track,
       link: this.props.track.external_urls.spotify,
     };
-  }
-
-  getAudio() {
-    getAudioFeat(this.state.track.id).then((data) => {
-      console.log(data);
-    });
-    getDevices().then((data) => {
-      console.log(data);
-    });
   }
 
   render() {
@@ -44,7 +33,7 @@ class Song extends Component {
               src={playBtn}
               alt="Play"
               className="songbox-play-img"
-              onClick={this.getAudio}
+              onClick={() => this.props.playSong(this.state.track.uri)}
             />
           </div>
         </div>

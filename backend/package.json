@@ -14,7 +14,10 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon app"
+    "start": "node app.js",
+     "build": "cd .. && cd frontend && cd virtualdj && npm run build",
+     "install-client": "cd .. && cd frontend && cd virtualdj && npm install",
+     "heroku-postbuild": "npm run install-client && npm run build"
   },
   "author": "",
   "license": "ISC"

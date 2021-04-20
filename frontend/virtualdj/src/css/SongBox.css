@@ -8,17 +8,22 @@
   overflow-y: auto;
   display: flex;
   background: transparent;
+  border-bottom: 1px solid aliceblue;
+}
+
+.songbox-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .songbox-image-wrapper {
   width: 25%;
   height: 100%;
-  border: 1px solid black;
 }
 
 .songbox-image {
   width: 100%;
   height: 100%;
+  border-radius: 5px;
 }
 
 .songbox-details {

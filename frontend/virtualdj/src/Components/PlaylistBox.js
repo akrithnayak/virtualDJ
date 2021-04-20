@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../css/PlaylistBox.css";
+import playBtn from "../img/box/play.png";
 
 class Playlist extends Component {
   state = {};
@@ -18,6 +19,14 @@ class Playlist extends Component {
           <div>Name: {playlist.name}</div>
           <div>Owner: {playlist.owner.display_name}</div>
           <div>Total tracks: {playlist.tracks.total}</div>
+          <div className="playlistbox-play">
+            <img
+              src={playBtn}
+              alt="Play"
+              className="playlistbox-play-img"
+              onClick={() => this.props.playPlaylist(playlist.uri)}
+            />
+          </div>
         </div>
       </div>
     );

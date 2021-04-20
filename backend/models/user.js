@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema(
       type: ObjectId,
       ref: "Room",
     },
+    accesstoken: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

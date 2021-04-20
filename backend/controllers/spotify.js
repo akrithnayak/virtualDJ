@@ -2,7 +2,7 @@ const SpotifyWebApi = require("spotify-web-api-node");
 
 require("dotenv").config();
 
-const spotifyApi = new SpotifyWebApi({
+var spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   redirectUri: process.env.REDIRECT_URI,
@@ -29,23 +29,6 @@ scopes = [
   "user-follow-read",
   "user-follow-modify",
 ];
-
-// exports.setCredentials = (req, res) => {
-//   spotifyApi
-//     .clientCredentialsGrant()
-//     .then((data) => {
-//       spotifyApi.setAccessToken(data.body["access_token"]);
-//       token = data.body["access_token"];
-//       return res.json({
-//         data,
-//       });
-//     })
-//     .catch((err) => {
-//       return res.json({
-//         err,
-//       });
-//     });
-// };
 
 exports.setCredentials = (req, res) => {
   var url = spotifyApi.createAuthorizeURL(scopes);
@@ -123,10 +106,16 @@ exports.callback = (req, res) => {
   spotifyApi
     .authorizationCodeGrant(code)
     .then((data) => {
-      console.log(data);
       spotifyApi.setAccessToken(data.body["access_token"]);
       spotifyApi.setRefreshToken(data.body["refresh_token"]);
       spotifyApi.expiresIn = data.body.expires_in;
+      var x = 0;
+      var intervalID = setInterval(function () {
+        refreshToken(data.body["refresh_token"]);
+        if (++x === 5) {
+          clearInterval(intervalID);
+        }
+      }, 3600000);
       res.redirect(`http://localhost:3000/create`);
     })
     .catch((err) => {
@@ -144,4 +133,23 @@ exports.getAccessToken = (req, res) => {
     refreshToken: spotifyApi.getRefreshToken(),
     expiresIn: spotifyApi.expiresIn,
   });
+};
+
+const refreshToken = (refreshToken) => {
+  spotifyApi = new SpotifyWebApi({
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    redirectUri: process.env.REDIRECT_URI,
+    refreshToken,
+  });
+
+  spotifyApi
+    .refreshAccessToken()
+    .then((data) => {
+      spotifyApi.setAccessToken(data.body["access_token"]);
+      spotifyApi.expiresIn = data.body.expires_in;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };

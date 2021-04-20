@@ -12,9 +12,14 @@ class Home extends Component {
   }
 
   goNext() {
-    setCredentials().then((data) => {
-      window.location.assign(data.url);
-    });
+    setCredentials()
+      .then((data) => {
+        window.location.assign(data.url);
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log("Something went wrong");
+      });
   }
 
   render() {

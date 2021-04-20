@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { isAuthenticated, leaveRoom, endRoom, getRoom } from "../apicalls/room";
 import "../css/Room.css";
-import { getTracks, getPlaylists, getAccessToken } from "../apicalls/spotify";
+import { getTracks, getPlaylists } from "../apicalls/spotify";
 import searchIcon from "../img/room/search.png";
 import Song from "./SongBox";
 import Playlist from "./PlaylistBox";
@@ -15,6 +15,7 @@ class Room extends Component {
     this.leaveRoom = this.leaveRoom.bind(this);
     this.endRoom = this.endRoom.bind(this);
     this.playSong = this.playSong.bind(this);
+    this.playPlaylist = this.playPlaylist.bind(this);
     this.search = this.search.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.toggleTrackPlaylist = this.toggleTrackPlaylist.bind(this);
@@ -29,29 +30,29 @@ class Room extends Component {
       trackResults: [],
       playlistResults: [],
       accessToken: "",
-      trackUri: "",
+      trackUris: [],
+      intervalObject: null,
     };
+    this.intervalObject = undefined;
   }
 
   componentDidMount() {
+    clearInterval(this.intervalObject);
     getRoom(this.props.match.params.roomId).then((room) => {
-      this.setState({ room });
+      console.log(room.admin.accesstoken);
+      this.setState({ room, accessToken: room.admin.accesstoken });
     });
-    getAccessToken()
-      .then((data) => {
-        console.log(data.expiresIn);
-        this.setState({
-          accessToken: data.accessToken,
-        });
-      })
-      .catch(() => {
-        console.log("Somethin went wrong");
-      });
   }
 
   playSong(trackUri) {
     this.setState({
-      trackUri,
+      trackUris: [trackUri],
+    });
+  }
+
+  playPlaylist(trackUris) {
+    this.setState({
+      trackUris: trackUris,
     });
   }
 
@@ -75,7 +76,6 @@ class Room extends Component {
     });
     if (this.state.isTrack)
       getTracks(this.state.searchText).then((data) => {
-        console.log(data);
         this.setState({
           trackResults: data,
           playlistResults: [],
@@ -94,13 +94,14 @@ class Room extends Component {
   endRoom() {
     const data = isAuthenticated();
     endRoom(data)
-      .then((data) => {
+      .then(async (data) => {
         if (data.error) {
           this.setState({
             error: data.error,
             loading: false,
           });
         } else {
+          clearInterval(this.intervalObject);
           this.setState({
             didRedirect: true,
           });
@@ -139,7 +140,13 @@ class Room extends Component {
 
     const renderPlaylist = () => {
       return this.state.playlistResults.map((playlist, id) => {
-        return <Playlist key={id} playlist={playlist} />;
+        return (
+          <Playlist
+            key={id}
+            playlist={playlist}
+            playPlaylist={this.playPlaylist}
+          />
+        );
       });
     };
 
@@ -156,67 +163,71 @@ class Room extends Component {
         )}
         <div className="room-song-details">
           {isAuthenticated().role ? (
-            <div className="track-playlist-wrapper">
-              <div className="track-playlist-header-wrapper">
-                <div
-                  className={
-                    this.state.isTrack
-                      ? "track-header-selected"
-                      : "track-header"
-                  }
-                  onClick={this.toggleTrackPlaylist}
-                >
-                  Tracks
+            <div>
+              <div className="track-playlist-wrapper">
+                <div className="track-playlist-header-wrapper">
+                  <div
+                    className={
+                      this.state.isTrack
+                        ? "track-header-selected"
+                        : "track-header"
+                    }
+                    onClick={this.toggleTrackPlaylist}
+                  >
+                    Tracks
+                  </div>
+                  <div
+                    className={
+                      this.state.isTrack
+                        ? "playlist-header"
+                        : "playlist-header-selected"
+                    }
+                    onClick={this.toggleTrackPlaylist}
+                  >
+                    Playlists
+                  </div>
                 </div>
-                <div
-                  className={
-                    this.state.isTrack
-                      ? "playlist-header"
-                      : "playlist-header-selected"
-                  }
-                  onClick={this.toggleTrackPlaylist}
-                >
-                  Playlists
-                </div>
-              </div>
-              <div className="track-playlist-search">
-                <input
-                  type="text"
-                  className="room-search-text"
-                  value={this.state.searchText}
-                  onChange={(e) => this.handleChange("searchText", e)}
-                  placeholder="Search"
-                />
-                <div className="room-search">
-                  <img
-                    src={searchIcon}
-                    alt=""
-                    className="search-icon"
-                    onClick={this.search}
+                <div className="track-playlist-search">
+                  <input
+                    type="text"
+                    className="room-search-text"
+                    value={this.state.searchText}
+                    onChange={(e) => this.handleChange("searchText", e)}
+                    placeholder="Search"
                   />
+                  <div className="room-search">
+                    <img
+                      src={searchIcon}
+                      alt=""
+                      className="search-icon"
+                      onClick={this.search}
+                    />
+                  </div>
+                </div>
+                <div className="track-playlist-search-results">
+                  {this.state.trackResults.length && this.state.isTrack
+                    ? renderTrack()
+                    : this.state.playlistResults.length && !this.state.isTrack
+                    ? renderPlaylist()
+                    : ""}
                 </div>
               </div>
-              <div className="track-playlist-search-results">
-                {this.state.trackResults.length && this.state.isTrack
-                  ? renderTrack()
-                  : this.state.playlistResults.length && !this.state.isTrack
-                  ? renderPlaylist()
-                  : ""}
+              <div className="room-player-wrapper">
+                <Player
+                  accessToken={this.state.accessToken}
+                  trackUris={this.state.trackUris}
+                  admin={true}
+                />
               </div>
             </div>
           ) : (
-            <div></div>
-          )}
-
-          {this.state.accessToken && this.state.trackUri ? (
             <div className="room-player-wrapper">
               <Player
                 accessToken={this.state.accessToken}
-                trackUri={this.state.trackUri}
+                trackUris={this.state.trackUris}
+                admin={false}
               />
             </div>
-          ) : (
-            <div></div>
           )}
         </div>
 

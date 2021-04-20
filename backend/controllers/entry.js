@@ -13,15 +13,17 @@ function codeGenerator() {
 }
 
 exports.getRoomById = (req, res, next, id) => {
-  Room.findById(id, (err, room) => {
-    if (err || !room) {
-      return res.status(400).json({
-        error: "Room not found!",
-      });
-    }
-    req.room = room;
-    next();
-  });
+  Room.findById(id)
+    .populate("admin", "accesstoken")
+    .exec((err, room) => {
+      if (err || !room) {
+        return res.status(400).json({
+          error: "Room not found!",
+        });
+      }
+      req.room = room;
+      next();
+    });
 };
 
 exports.getUserById = (req, res, next, id) => {
@@ -37,36 +39,40 @@ exports.getUserById = (req, res, next, id) => {
 };
 
 exports.createRoom = (req, res) => {
-  User.create({ username: req.body.username, role: 1 }, (err, user) => {
-    if (err) {
-      return res.status(400).json({
-        error: "User account couldn't be created",
-      });
-    }
-    var room = {
-      name: req.body.name,
-      code: codeGenerator(),
-      members: [user._id],
-      max: req.body.max,
-      admin: user._id,
-      description: req.body.description,
-    };
-    Room.create(room, (err, room) => {
+  User.create(
+    { username: req.body.username, role: 1, accesstoken: req.body.accessToken },
+    (err, user) => {
       if (err) {
         return res.status(400).json({
-          error: "Room couldn't be created",
+          error: "User account couldn't be created",
         });
       }
-      user.room = room._id;
-      user.save();
-      return res.json({ user, room });
-    });
-  });
+      var room = {
+        name: req.body.name,
+        code: codeGenerator(),
+        members: [user._id],
+        max: req.body.max,
+        admin: user._id,
+        description: req.body.description,
+      };
+      Room.create(room, (err, room) => {
+        if (err) {
+          return res.status(400).json({
+            error: "Room couldn't be created",
+          });
+        }
+        user.room = room._id;
+        user.save();
+        return res.json({ user, room });
+      });
+    }
+  );
 };
 
 exports.joinRoom = (req, res) => {
   Room.findOne({ code: req.body.code })
     .populate("members")
+    .populate("admin", "accesstoken")
     .exec((err, room) => {
       if (err || !room) {
         return res.status(400).json({
@@ -83,18 +89,25 @@ exports.joinRoom = (req, res) => {
         return res.status(400).json({
           error: "Party is full!",
         });
-      User.create({ username: req.body.username, role: 0 }, (err, user) => {
-        if (err) {
-          return res.status(400).json({
-            error: "User account couldn't be created",
-          });
+      User.create(
+        {
+          username: req.body.username,
+          role: 0,
+          accesstoken: room.admin.accesstoken,
+        },
+        (err, user) => {
+          if (err) {
+            return res.status(400).json({
+              error: "User account couldn't be created",
+            });
+          }
+          room.members.push(user._id);
+          room.save();
+          user.room = room._id;
+          user.save();
+          return res.json(user);
         }
-        room.members.push(user._id);
-        room.save();
-        user.room = room._id;
-        user.save();
-        return res.json(user);
-      });
+      );
     });
 };
 

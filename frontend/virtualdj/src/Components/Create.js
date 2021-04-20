@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { authenticate, createRoom } from "../apicalls/room";
+import { getAccessToken } from "../apicalls/spotify";
 import "../css/Create.css";
 
 class Create extends Component {
@@ -29,35 +30,43 @@ class Create extends Component {
   }
 
   onSubmit() {
-    var { username, name, max, description } = this.state;
-    if (max === "") max = 8;
-    this.setState({
-      loading: true,
-    });
-    createRoom({ username, name, max, description })
-      .then((data) => {
-        if (data.error) {
-          this.setState({
-            error: data.error,
-            loading: false,
-          });
-        } else {
-          authenticate(
-            {
-              userId: data.user._id,
-              roomId: data.room._id,
-              role: data.user.role,
-            },
-            () => {
-              this.setState({
-                didRedirect: true,
-                room: data.room,
-              });
-            }
-          );
-        }
+    getAccessToken().then((data) => {
+      var { username, name, max, description } = this.state;
+      if (max === "") max = 8;
+      this.setState({
+        loading: true,
+      });
+      createRoom({
+        username,
+        name,
+        max,
+        description,
+        accessToken: data.accessToken,
       })
-      .catch((err) => console.log(err));
+        .then((data) => {
+          if (data.error) {
+            this.setState({
+              error: data.error,
+              loading: false,
+            });
+          } else {
+            authenticate(
+              {
+                userId: data.user._id,
+                roomId: data.room._id,
+                role: data.user.role,
+              },
+              () => {
+                this.setState({
+                  didRedirect: true,
+                  room: data.room,
+                });
+              }
+            );
+          }
+        })
+        .catch((err) => console.log(err));
+    });
   }
 
   render() {

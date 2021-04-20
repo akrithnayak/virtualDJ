@@ -75,8 +75,8 @@ a {
 .create-back-button {
   cursor: pointer;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 5px;
+  left: 5px;
   padding: 5px;
   border: 1px solid white;
   border-radius: 5px;

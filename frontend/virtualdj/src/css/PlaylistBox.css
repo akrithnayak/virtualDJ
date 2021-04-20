@@ -1,0 +1,26 @@
+.playlistbox-wrapper {
+  height: 100px;
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  overflow-y: auto;
+  display: flex;
+}
+
+.playlistbox-image-wrapper {
+  width: 25%;
+  height: 100%;
+  border: 1px solid black;
+}
+
+.playlistbox-image {
+  width: 100%;
+  height: 100%;
+}
+
+.playlistbox-details {
+  width: 75%;
+  margin-left: 5px;
+}

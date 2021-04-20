@@ -1,0 +1,41 @@
+.songbox-wrapper {
+  height: 100px;
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  overflow-y: auto;
+  display: flex;
+}
+
+.songbox-image-wrapper {
+  width: 25%;
+  height: 100%;
+  border: 1px solid black;
+}
+
+.songbox-image {
+  width: 100%;
+  height: 100%;
+}
+
+.songbox-details {
+  width: 75%;
+  margin-left: 5px;
+  position: relative;
+}
+
+.songbox-play {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 50px;
+  width: 50px;
+}
+
+.songbox-play-img {
+  max-width: 100%;
+  max-height: 100%;
+  cursor: pointer;
+}

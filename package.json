@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "backend/app.js",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -14,10 +14,9 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node backend\\app.js",
-     "build": "cd frontend\\virtualdj && npm run build",
-     "install-client": "cd frontend\\virtualdj && npm install",
-     "heroku-postbuild": "npm run install-client && npm run build"
+    "start": "node backend/app.js",
+     "build": "cd backend/frontend/virtualdj && npm run build",
+     "heroku-postbuild": "npm run install --prefix backend/frontend/virtualdj && npm run build --prefix backend/frontend/virtualdj"
   },
   "author": "",
   "license": "ISC"

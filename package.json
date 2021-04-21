@@ -14,9 +14,9 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node app.js",
-     "build": "cd .. && cd frontend && cd virtualdj && npm run build",
-     "install-client": "cd .. && cd frontend && cd virtualdj && npm install",
+    "start": "node backend\\app.js",
+     "build": "cd frontend\\virtualdj && npm run build",
+     "install-client": "cd frontend\\virtualdj && npm install",
      "heroku-postbuild": "npm run install-client && npm run build"
   },
   "author": "",

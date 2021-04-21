@@ -33,11 +33,9 @@ class Room extends Component {
       trackUris: [],
       intervalObject: null,
     };
-    this.intervalObject = undefined;
   }
 
   componentDidMount() {
-    clearInterval(this.intervalObject);
     getRoom(this.props.match.params.roomId).then((room) => {
       console.log(room.admin.accesstoken);
       this.setState({ room, accessToken: room.admin.accesstoken });
@@ -101,7 +99,6 @@ class Room extends Component {
             loading: false,
           });
         } else {
-          clearInterval(this.intervalObject);
           this.setState({
             didRedirect: true,
           });

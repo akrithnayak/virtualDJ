@@ -109,14 +109,7 @@ exports.callback = (req, res) => {
       spotifyApi.setAccessToken(data.body["access_token"]);
       spotifyApi.setRefreshToken(data.body["refresh_token"]);
       spotifyApi.expiresIn = data.body.expires_in;
-      var x = 0;
-      var intervalID = setInterval(function () {
-        refreshToken(data.body["refresh_token"]);
-        if (++x === 5) {
-          clearInterval(intervalID);
-        }
-      }, 3600000);
-      res.redirect(`http://localhost:3000/create`);
+      res.redirect(process.env.REDIRECT_USER_URL);
     })
     .catch((err) => {
       if (err) {
@@ -133,23 +126,4 @@ exports.getAccessToken = (req, res) => {
     refreshToken: spotifyApi.getRefreshToken(),
     expiresIn: spotifyApi.expiresIn,
   });
-};
-
-const refreshToken = (refreshToken) => {
-  spotifyApi = new SpotifyWebApi({
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    redirectUri: process.env.REDIRECT_URI,
-    refreshToken,
-  });
-
-  spotifyApi
-    .refreshAccessToken()
-    .then((data) => {
-      spotifyApi.setAccessToken(data.body["access_token"]);
-      spotifyApi.expiresIn = data.body.expires_in;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
 };

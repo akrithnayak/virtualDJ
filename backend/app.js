@@ -27,7 +27,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static("frontend/vitualdj/build"));
+  app.use(express.static("../frontend/vitualdj/build"));
 }
 
 app.use("/", entryRoutes);

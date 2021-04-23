@@ -1,0 +1,133 @@
+.background-create {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: center / cover no-repeat fixed url("../img/create/bg.jpg");
+}
+
+.create-form-div {
+  width: 70%;
+  height: 100vh;
+  margin-right: auto;
+}
+
+.create-form-div-wrapper {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 235, 205, 0.3);
+  display: flex;
+  align-items: center;
+}
+
+.create-form {
+  width: 30%;
+  margin: auto;
+}
+
+.create-form-element-div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.create-form-elements:not(textarea) {
+  border: 1px solid blue;
+  border-radius: 100px;
+  padding: 10px;
+  margin: 10px;
+  width: 100%;
+  outline: none;
+  text-align: center;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 100%;
+}
+
+textarea {
+  border: 1px solid blue;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+  width: 100%;
+  outline: none;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 100%;
+  resize: none;
+}
+
+.create-form-element-button {
+  cursor: pointer;
+  margin: auto;
+  padding: 10px;
+  width: 50%;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  border: 1px solid white;
+  border-radius: 50px;
+  text-align: center;
+  color: white;
+}
+
+a {
+  text-decoration: none;
+}
+
+.create-back-button {
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  padding: 5px;
+  border: 1px solid white;
+  border-radius: 5px;
+  text-align: center;
+  color: white;
+}
+
+.create-form-element-button:hover,
+.create-back-button:hover {
+  background-color: black;
+}
+
+@media screen and (max-width: 1200px) {
+  .create-form {
+    width: 40%;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .create-form {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .create-form {
+    width: 60%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .create-form {
+    width: 80%;
+  }
+  .create-form-div {
+    width: 75%;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .create-form {
+    width: 90%;
+  }
+  .create-form-div {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 300px) {
+  .create-form {
+    width: 100%;
+  }
+  .create-form-div {
+    width: 90%;
+  }
+}

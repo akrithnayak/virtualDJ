@@ -93,7 +93,7 @@ exports.joinRoom = (req, res) => {
         {
           username: req.body.username,
           role: 0,
-          accesstoken: room.admin.accesstoken,
+          accesstoken: req.body.accessToken,
         },
         (err, user) => {
           if (err) {

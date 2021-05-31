@@ -1,4 +1,5 @@
 const Room = require("../models/room");
+const fetch = require("node-fetch");
 const io = require("../app.js");
 
 exports.socketHandler = (socket, io) => {
@@ -18,6 +19,10 @@ exports.socketHandler = (socket, io) => {
         io.to(roomId).emit("receive message", room);
       });
     });
+  });
+
+  socket.on("playback changed", async ({ room, data }) => {
+    io.to(room._id).emit("play", data);
   });
 
   socket.on("leave room", async (roomId) => {
@@ -42,4 +47,27 @@ async function findRoom(id) {
         path: "sender",
       },
     });
+}
+
+async function playHelper({ room, socket }) {
+  var data = {};
+  while (!data.item) {
+    data = await fetch(
+      "https://api.spotify.com/v1/me/player/currently-playing",
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + room.admin.accesstoken,
+        },
+      }
+    )
+      .then((data) => {
+        return data.json();
+      })
+      .catch((err) => {
+        return {};
+      });
+  }
+  // console.log(data);
+  socket.broadcast.to(room._id).emit("play", data);
 }

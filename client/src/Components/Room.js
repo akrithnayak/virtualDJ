@@ -3,7 +3,13 @@ import { Redirect } from "react-router-dom";
 import { leaveRoom, endRoom, getRoom } from "../apicalls/room";
 import { animateScroll } from "react-scroll";
 import "../css/Room.css";
-import { getTracks, getPlaylists } from "../apicalls/spotify";
+import {
+  getTracks,
+  getPlaylists,
+  getCurrentPlaybackState,
+  updateCurrentPlayback,
+  adminPlaybackSync,
+} from "../apicalls/spotify";
 import searchIcon from "../img/room/search.png";
 import detailsIcon from "../img/room/details.png";
 import Song from "./SongBox";
@@ -28,7 +34,6 @@ class Room extends Component {
     this.sendMessage = this.sendMessage.bind(this);
     this.scrollToBottom = this.scrollToBottom.bind(this);
     this.state = {
-      error: "",
       didRedirect: false,
       room: null,
       user: this.props.location.state.user,
@@ -39,10 +44,11 @@ class Room extends Component {
       trackResults: [],
       playlistResults: [],
       accessToken: "",
-      trackUris: [],
+      trackUri: "",
       intervalObject: null,
       socket: null,
       isModalOpen: false,
+      deviceId: "",
     };
   }
 
@@ -53,7 +59,7 @@ class Room extends Component {
     });
 
     this.state.socket.on("someone joined", async (room) => {
-      this.setState(
+      await this.setState(
         {
           room,
         },
@@ -62,7 +68,7 @@ class Room extends Component {
     });
 
     this.state.socket.on("receive message", async (room) => {
-      this.setState(
+      await this.setState(
         {
           room,
         },
@@ -71,29 +77,43 @@ class Room extends Component {
     });
 
     this.state.socket.on("someone left", async (room) => {
-      this.setState({
+      await this.setState({
         room,
       });
     });
 
     this.state.socket.on("everyone leave", async (members) => {
-      this.setState({
+      await this.setState({
         didRedirect: true,
       });
     });
 
     this.state.socket.emit("join room", this.state.room._id);
 
+    this.state.socket.on("play", async (state) => {
+      if (!this.state.user.role) {
+        this.setState({
+          trackUri: state.track.uri,
+        });
+        await adminPlaybackSync({
+          data: state,
+          user: this.state.user,
+          currentDeviceId: this.state.deviceId,
+        });
+      }
+    });
+
     return () => {
       socket.disconnect();
     };
   }
 
-  componentDidMount() {
-    getRoom(this.props.match.params.roomId)
+  async componentDidMount() {
+    await getRoom(this.props.match.params.roomId)
       .then(async (room) => {
-        await this.setState({ room, accessToken: room.admin.accesstoken });
-        this.socketOperation();
+        await this.setState({ room });
+        console.log(this.state.room);
+        await this.socketOperation();
       })
       .catch((err) => {
         console.log(err);
@@ -118,15 +138,47 @@ class Room extends Component {
     });
   }
 
-  playSong(trackUri) {
-    this.setState({
-      trackUris: [trackUri],
+  async playSong(trackUri) {
+    await this.setState({
+      trackUri,
     });
   }
 
-  playPlaylist(trackUris) {
-    this.setState({
-      trackUris: trackUris,
+  async playPlaylist(trackUri) {
+    await this.setState({
+      trackUri,
+    });
+  }
+
+  async playBackController(state) {
+    if (state && state.track && this.state.socket) {
+      await this.setState({
+        deviceId: state.currentDeviceId,
+      });
+      this.state.socket.emit("playback changed", {
+        data: state,
+        room: this.state.room,
+      });
+    }
+  }
+
+  async loadUserPlayback(state) {
+    await this.setState({
+      deviceId: state.currentDeviceId,
+    });
+    if (!this.state.room) return;
+    const res = await getCurrentPlaybackState({
+      userId: this.state.room.admin._id,
+    });
+    if (!res.item) return;
+
+    this.state.socket.emit("playback changed", {
+      data: {
+        track: res.item,
+        isPlaying: res.is_playing,
+        progressMs: res.progress_ms,
+      },
+      room: this.state.room,
     });
   }
 
@@ -154,16 +206,21 @@ class Room extends Component {
       trackResults: [],
       playlistResults: [],
     });
-    if (this.state.isTrack)
-      getTracks(this.state.searchText).then((data) => {
+    if (this.state.isTrack) {
+      getTracks({
+        trackName: this.state.searchText,
+        userId: this.state.user._id,
+      }).then((data) => {
         this.setState({
           trackResults: data,
           playlistResults: [],
         });
       });
-    else
-      getPlaylists(this.state.searchText).then((data) => {
-        console.log(data);
+    } else
+      getPlaylists({
+        playlistName: this.state.searchText,
+        userId: this.state.user._id,
+      }).then((data) => {
         this.setState({
           playlistResults: data,
           trackResults: [],
@@ -172,17 +229,14 @@ class Room extends Component {
   }
 
   endRoom() {
+    clearInterval(this.intervalObject);
     const data = {
-      userId: this.state.user._id,
-      roomId: this.state.room._id,
+      userId: this.state.user ? this.state.user._id : undefined,
+      roomId: this.state.room ? this.state.room._id : undefined,
     };
     endRoom(data)
       .then(async (data) => {
-        if (data.error) {
-          this.setState({
-            error: data.error,
-          });
-        } else {
+        if (!data.error) {
           this.state.socket.emit("end party", this.state.room._id);
           this.setState({
             didRedirect: true,
@@ -197,28 +251,26 @@ class Room extends Component {
   }
 
   leaveRoom() {
+    clearInterval(this.intervalObject);
     const data = {
-      userId: this.state.user._id,
-      roomId: this.state.room._id,
+      userId: this.state.user ? this.state.user._id : undefined,
+      roomId: this.state.room ? this.state.room._id : undefined,
     };
     leaveRoom(data)
       .then((data) => {
-        if (data.error) {
-          this.setState({
-            error: data.error,
-          });
-        } else {
+        if (!data.error) {
           this.state.socket.emit("leave room", this.state.room._id);
           this.setState({
             didRedirect: true,
           });
         }
       })
-      .catch((err) =>
+      .catch((err) => {
+        console.log(err);
         this.setState({
           didRedirect: true,
-        })
-      );
+        });
+      });
   }
 
   render() {
@@ -226,7 +278,14 @@ class Room extends Component {
 
     const renderTrack = () => {
       return this.state.trackResults.map((track, id) => {
-        return <Song key={id} track={track} playSong={this.playSong} />;
+        return (
+          <Song
+            key={id}
+            track={track}
+            playSong={this.playSong}
+            isAdmin={this.state.user.role}
+          />
+        );
       });
     };
 
@@ -367,22 +426,33 @@ class Room extends Component {
                     : ""}
                 </div>
               </div>
-              <div className="room-player-wrapper">
-                <Player
-                  accessToken={this.state.accessToken}
-                  trackUris={this.state.trackUris}
-                  admin={true}
-                />
-              </div>
+              {this.state.user.role ? (
+                <div className="room-player-wrapper">
+                  <Player
+                    accessToken={this.state.user.accesstoken}
+                    trackUri={this.state.trackUri}
+                    admin={true}
+                    playBackController={(state) =>
+                      this.playBackController(state)
+                    }
+                  />
+                </div>
+              ) : (
+                <div>
+                  <div className="room-player-wrapper">
+                    <Player
+                      accessToken={this.state.user.accesstoken}
+                      trackUri={this.state.trackUri}
+                      admin={false}
+                      loadUserPlayback={(state) => this.loadUserPlayback(state)}
+                    />
+                    <div className="transparent-wrapper"></div>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="room-player-wrapper">
-              <Player
-                accessToken={this.state.accessToken}
-                trackUris={this.state.trackUris}
-                admin={false}
-              />
-            </div>
+            ""
           )}
         </div>
 

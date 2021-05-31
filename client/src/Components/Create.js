@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { createRoom } from "../apicalls/room";
-import { getAccessToken } from "../apicalls/spotify";
+
 import "../css/Create.css";
 
 class Create extends Component {
@@ -19,6 +19,9 @@ class Create extends Component {
       didRedirect: false,
       room: "",
       user: "",
+      accessToken: new URLSearchParams(this.props.location.search).get(
+        "access_token"
+      ),
     };
   }
 
@@ -31,35 +34,33 @@ class Create extends Component {
   }
 
   onSubmit() {
-    getAccessToken().then((data) => {
-      var { username, name, max, description } = this.state;
-      if (max === "") max = 8;
-      this.setState({
-        loading: true,
-      });
-      createRoom({
-        username,
-        name,
-        max,
-        description,
-        accessToken: data.accessToken,
-      })
-        .then((data) => {
-          if (data.error) {
-            this.setState({
-              error: data.error,
-              loading: false,
-            });
-          } else {
-            this.setState({
-              didRedirect: true,
-              room: data.room,
-              user: data.user,
-            });
-          }
-        })
-        .catch((err) => console.log(err));
+    var { username, name, max, description, accessToken } = this.state;
+    if (max === "") max = 8;
+    this.setState({
+      loading: true,
     });
+    createRoom({
+      username,
+      name,
+      max,
+      description,
+      accessToken,
+    })
+      .then((data) => {
+        if (data.error) {
+          this.setState({
+            error: data.error,
+            loading: false,
+          });
+        } else {
+          this.setState({
+            didRedirect: true,
+            room: data.room,
+            user: data.user,
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   render() {

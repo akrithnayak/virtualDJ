@@ -2,12 +2,19 @@ import SpotifyPlayer from "react-spotify-web-playback";
 
 import React, { useEffect, useState } from "react";
 
-export default function Player({ accessToken, trackUris, admin }) {
+export default function Player({
+  accessToken,
+  trackUri,
+  admin,
+  playBackController,
+  loadUserPlayback,
+}) {
   const [play, setPlay] = useState(true);
+  const [isLoaded, setisLoaded] = useState(false);
 
   useEffect(() => {
     setPlay(true);
-  }, [trackUris]);
+  }, [trackUri]);
 
   const playerStyles = {
     activeColor: "#fff",
@@ -24,12 +31,13 @@ export default function Player({ accessToken, trackUris, admin }) {
     return (
       <SpotifyPlayer
         token={accessToken}
-        showSaveIcon
-        callback={(state) => {
+        autoPlay
+        callback={async (state) => {
           if (!state.isPlaying) setPlay(false);
+          await playBackController(state);
         }}
         play={play}
-        uris={trackUris}
+        uris={trackUri}
         magnifySliderOnHover
         styles={playerStyles}
         name="Player"
@@ -38,9 +46,16 @@ export default function Player({ accessToken, trackUris, admin }) {
   return (
     <SpotifyPlayer
       token={accessToken}
-      play={true}
-      syncExternalDevice
-      syncExternalDeviceInterval={10}
+      callback={async (state) => {
+        if (!state.isPlaying) setPlay(false);
+        await loadUserPlayback(state);
+        if (state.status === "READY") {
+          await loadUserPlayback(state);
+          setisLoaded(true);
+        }
+      }}
+      play={play}
+      uris={trackUri}
       magnifySliderOnHover
       styles={playerStyles}
       name="Player"

@@ -4,6 +4,7 @@
     url("../img/room/bg.gif") rgb(46, 44, 44, 0.9);
   position: absolute;
   width: 100%;
+  height: 100%;
   display: flex;
   z-index: 100;
 }
@@ -109,6 +110,7 @@
   border-radius: 5px;
   border: 3px solid white;
   padding: 10px;
+  position: relative;
 }
 
 .track-playlist-header-wrapper {
@@ -376,4 +378,14 @@
 .chat-name {
   font-size: small;
   color: #6bcbef;
+}
+
+.transparent-wrapper {
+  background-color: transparent;
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }

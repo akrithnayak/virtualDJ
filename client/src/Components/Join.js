@@ -15,6 +15,9 @@ class Join extends Component {
       didRedirect: false,
       roomId: "",
       user: "",
+      accessToken: new URLSearchParams(this.props.location.search).get(
+        "access_token"
+      ),
     };
   }
 
@@ -25,14 +28,13 @@ class Join extends Component {
   }
 
   onSubmit() {
-    var { username, code } = this.state;
+    var { username, code, accessToken } = this.state;
     this.setState({
       loading: true,
     });
-    joinRoom({ username, code })
+    joinRoom({ username, code, accessToken })
       .then((data) => {
         if (data.error) {
-          console.log(data.error);
           this.setState({
             error: data.error,
             loading: false,

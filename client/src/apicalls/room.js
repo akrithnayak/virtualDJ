@@ -32,8 +32,6 @@ export const joinRoom = async (room) => {
 
 export const leaveRoom = async (data) => {
   if (typeof window != "undefined") {
-    localStorage.removeItem("token");
-
     return await fetch(`${API}/api/leave/${data.roomId}/${data.userId}`, {
       method: "DELETE",
     })
@@ -46,8 +44,6 @@ export const leaveRoom = async (data) => {
 
 export const endRoom = async (data) => {
   if (typeof window != "undefined") {
-    localStorage.removeItem("token");
-
     return await fetch(`${API}/api/end/${data.roomId}/${data.userId}`, {
       method: "DELETE",
     })

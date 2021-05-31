@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { setCredentials } from "../apicalls/spotify";
 import sound from "../audio/bg.mp3";
 import "../css/Home.css";
@@ -11,9 +10,10 @@ class Home extends Component {
     this.state = {};
   }
 
-  goNext() {
-    setCredentials()
+  goNext(query) {
+    setCredentials(query)
       .then((data) => {
+        // console.log(data);
         window.location.assign(data.url);
       })
       .catch((err) => {
@@ -31,12 +31,16 @@ class Home extends Component {
         <div className="background-outer">
           <div className="buttons-group">
             <div className="buttons-wrapper-home">
-              <div className="buttons-home" onClick={this.goNext}>
+              <div
+                className="buttons-home"
+                onClick={() => this.goNext("create")}
+              >
                 Create Room
               </div>
-              <Link to="/join">
-                <div className="buttons-home">Join Room</div>
-              </Link>
+
+              <div className="buttons-home" onClick={() => this.goNext("join")}>
+                Join Room
+              </div>
             </div>
           </div>
         </div>

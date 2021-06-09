@@ -7,7 +7,6 @@ import {
   getTracks,
   getPlaylists,
   getCurrentPlaybackState,
-  updateCurrentPlayback,
   adminPlaybackSync,
 } from "../apicalls/spotify";
 import searchIcon from "../img/room/search.png";
@@ -120,7 +119,8 @@ class Room extends Component {
       });
   }
 
-  sendMessage() {
+  sendMessage(e) {
+    e.preventDefault();
     if (!this.state.chatMessage.trim()) return;
     this.state.socket.emit("send message", {
       roomId: this.state.room._id,
@@ -201,7 +201,9 @@ class Room extends Component {
     });
   }
 
-  search() {
+  search(e) {
+    e.preventDefault();
+    if (!this.state.searchText.trim()) return;
     this.setState({
       trackResults: [],
       playlistResults: [],
@@ -400,7 +402,10 @@ class Room extends Component {
                     Playlists
                   </div>
                 </div>
-                <div className="track-playlist-search">
+                <form
+                  className="track-playlist-search"
+                  onSubmit={(e) => this.search(e)}
+                >
                   <input
                     type="text"
                     className="room-search-text"
@@ -413,11 +418,11 @@ class Room extends Component {
                       src={searchIcon}
                       alt=""
                       className="search-icon"
-                      onClick={this.search}
+                      onClick={(e) => this.search(e)}
                     />
                     <span className="search-tooltiptext">Search</span>
                   </div>
-                </div>
+                </form>
                 <div className="track-playlist-search-results">
                   {this.state.trackResults.length && this.state.isTrack
                     ? renderTrack()
@@ -492,7 +497,10 @@ class Room extends Component {
                 <div></div>
               )}
             </div>
-            <div className="room-chat-message-wrapper">
+            <form
+              className="room-chat-message-wrapper"
+              onSubmit={(e) => this.sendMessage(e)}
+            >
               <div className="room-chat-text-wrapper">
                 <input
                   type="text"
@@ -502,7 +510,10 @@ class Room extends Component {
                   placeholder="Type message"
                 />
               </div>
-              <div className="room-chat-send-button" onClick={this.sendMessage}>
+              <div
+                className="room-chat-send-button"
+                onClick={(e) => this.sendMessage(e)}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -515,7 +526,7 @@ class Room extends Component {
                   ></path>
                 </svg>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

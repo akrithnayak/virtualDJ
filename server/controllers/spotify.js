@@ -128,25 +128,3 @@ exports.getCurrentPlaybackState = async (req, res) => {
     });
   return res.json(data);
 };
-
-exports.updateCurrentPlayback = async (req, res) => {
-  if (!req.body.user.role) return res.json({ msg: "Gone" });
-
-  const data = await fetch("https://api.spotify.com/v1/me/player", {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + req.user.accesstoken,
-    },
-  })
-    .then((data) => {
-      return data.json();
-    })
-    .catch((err) => {
-      return {};
-    });
-
-  if (!data.item) return res.json({ msg: "Gone" });
-
-  await Room.findByIdAndUpdate(req.body.room._id, { $set: { current: data } });
-  return res.json(data);
-};

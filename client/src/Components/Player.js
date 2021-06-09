@@ -10,7 +10,6 @@ export default function Player({
   loadUserPlayback,
 }) {
   const [play, setPlay] = useState(true);
-  const [isLoaded, setisLoaded] = useState(false);
 
   useEffect(() => {
     setPlay(true);
@@ -51,7 +50,6 @@ export default function Player({
         await loadUserPlayback(state);
         if (state.status === "READY") {
           await loadUserPlayback(state);
-          setisLoaded(true);
         }
       }}
       play={play}

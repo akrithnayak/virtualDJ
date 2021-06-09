@@ -23,5 +23,4 @@ router.get("/gettracks/:userId", getTracks);
 router.get("/getplaylists/:userId", getPlaylists);
 router.get("/getplaybackstate/:userId", getCurrentPlaybackState);
 
-router.put("/updatecurrentplayback/:userId", updateCurrentPlayback);
 module.exports = router;

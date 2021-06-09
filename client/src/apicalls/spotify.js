@@ -50,24 +50,6 @@ export const getAccessToken = async () => {
     .catch((err) => console.log(err));
 };
 
-export const updateCurrentPlayback = async (data) => {
-  return await fetch(
-    `${API}/api/updatecurrentplayback/${data.room.admin._id}`,
-    {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  )
-    .then((response) => {
-      return response.json();
-    })
-    .catch((err) => console.log(err));
-};
-
 export const adminPlaybackSync = async (param) => {
   if (!param.data.track || param.user.role) return;
 

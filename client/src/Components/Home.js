@@ -13,7 +13,6 @@ class Home extends Component {
   goNext(query) {
     setCredentials(query)
       .then((data) => {
-        // console.log(data);
         window.location.assign(data.url);
       })
       .catch((err) => {
@@ -22,12 +21,14 @@ class Home extends Component {
       });
   }
 
+  componentDidMount() {
+    const audio = new Audio(sound);
+    audio.play();
+  }
+
   render() {
     return (
       <div className="background-home">
-        <div>
-          <audio src={sound} autoPlay loop />
-        </div>
         <div className="background-outer">
           <div className="buttons-group">
             <div className="buttons-wrapper-home">

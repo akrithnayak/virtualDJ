@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { setCredentials } from "../apicalls/spotify";
-import sound from "../audio/bg.mp3";
+// import sound from "../audio/bg.mp3";
 import "../css/Home.css";
 
 class Home extends Component {
@@ -21,10 +21,10 @@ class Home extends Component {
       });
   }
 
-  componentDidMount() {
-    const audio = new Audio(sound);
-    audio.play();
-  }
+  // componentDidMount() {
+  //   const audio = new Audio(sound);
+  //   audio.play();
+  // }
 
   render() {
     return (

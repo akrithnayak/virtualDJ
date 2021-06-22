@@ -35,6 +35,11 @@ app.use(cors());
 app.use(bodyParser.json());
 io.on("connection", (socket) => socketHandler(socket, io));
 
+app.get("/reload", (req, res) =>
+  res.json({
+    msg: "Hey bot",
+  })
+);
 app.use("/api", entryRoutes);
 app.use("/api", spotifyRoutes);
 
